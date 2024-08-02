@@ -12,16 +12,12 @@ pool:
 # Command line
 # Run a command line script using Bash on Linux and macOS and cmd.exe on Windows
 
-
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
-
-
 steps:
-
 # Command line
 # Run a command line script using Bash on Linux and macOS and cmd.exe on Windows
 
@@ -32,23 +28,11 @@ steps:
     #failOnStderr: false # Optional
 
 - task: NuGetToolInstaller@1
+
 - task: NuGetCommand@2
   inputs:
     restoreSolution: '$(solution)'
 
-
-#- task: SonarQubePrepare@4
-#  inputs:
-#    SonarQube: 'Sonarqube Osanam Azure'
-#    scannerMode: 'CLI'
-#    configMode: 'manual'
-#    cliProjectKey: 'Unyleya_-_DevOps_Unyleya_-_DevOps'
-#    cliProjectName: 'Unyleya - DevOps'
-#    cliSources: '$(System.DefaultWorkingDirectory)'
-#
-#- powershell: |
-#    $params = "$env:SONARQUBE_SCANNER_PARAMS" -replace '"sonar.branch.name":"[\w/,-.]*"\,?'
-#    Write-Host "##vso[task.setvariable variable=SONARQUBE_SCANNER_PARAMS]$params"
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
@@ -61,15 +45,15 @@ steps:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
-#- task: SonarQubeAnalyze@4
-
-#- task: SonarQubePublish@4
-#  inputs:
-#    pollingTimeoutSec: '300'
-
 - task: PublishPipelineArtifact@1
   inputs:
-       artifactName: # 'drop'
+    artifactName: 'drop'
 
- 
-
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerHubConnection' # Nome da conexão configurada
+    repository: 'jefersong3/unyleya_projeto_cicd_jeferson' # Seu repositório Docker Hub
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
+    tags: |
+      $(Build.BuildId)
